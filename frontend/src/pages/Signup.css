@@ -219,3 +219,72 @@
   cursor: pointer;
   color: #666;
 }
+/* ... (keep all existing styles from the top) ... */
+
+.form-group input::placeholder {
+  color: #999;
+}
+
+.signup-btn {
+  /* ... */
+}
+
+/* Add these new styles for OAuth buttons and divider */
+
+.oauth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.oauth-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center content */
+  gap: 12px;
+  padding: 14px;
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
+  background: #f9fafb;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+.oauth-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.oauth-btn:hover {
+  background-color: white;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #ccc;
+    margin-bottom: 24px;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.divider:not(:empty)::before {
+    margin-right: .25em;
+}
+
+.divider:not(:empty)::after {
+    margin-left: .25em;
+}
+
+
+/* ... (keep all other existing styles from .signup-btn:hover down to the end) ... */

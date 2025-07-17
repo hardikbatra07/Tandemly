@@ -1,14 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import { Search, MessageCircle, Calendar, User, Bell, Menu, X, Star, Users, BookOpen, ArrowRight, Zap, Globe, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-
+import { AuthContext } from '../context/AuthContext'; 
 
 export default function TandemlyLanding() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('features');
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+    const { user, dispatch } = useContext(AuthContext);
+   const [userProfile, setUserProfile] = useState(null);
 
+  useEffect(() => {
+    if (user) {
+      fetchUserProfile();
+    }
+  }, [user]);
+console.log("User from context:", user);
+
+  const fetchUserProfile = async () => {
+  try {
+   const response = await fetch(`/api/profile`, {
+  headers: {
+    'Authorization': `Bearer ${user.token}`  // or localStorage.getItem('userToken')
+  }
+});
+
+    const profileData = await response.json();
+    console.log('Fetched profile data:', profileData); // 👈 Add this
+
+    // Update this line depending on your response shape
+    setUserProfile(profileData); // or profileData.user
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+  }
+};
+
+
+  const handleLogout = () => {
+    // Clear localStorage and dispatch logout action
+    localStorage.removeItem('user');
+    dispatch({ type: 'LOGOUT' });
+  };
   const testimonials = [
     {
       name: "Sarah Chen",
@@ -124,27 +156,55 @@ export default function TandemlyLanding() {
             </div>
             
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-gray-700 hover:text-purple-600 transition-colors font-medium">Discover</a>
-              <a href="#" className="text-gray-700 hover:text-purple-600 transition-colors font-medium">Community</a>
-              <a href="#" className="text-gray-700 hover:text-purple-600 transition-colors font-medium">Sessions</a>
-              <a href="#" className="text-gray-700 hover:text-purple-600 transition-colors font-medium">Resources</a>
+              {/* <a href="/discover" className="text-gray-700 hover:text-purple-600 transition-colors font-medium">Discover</a> */}
+               <Link to="/discover" className="text-gray-700 hover:text-purple-600 transition-colors font-medium">Discover</Link>
+                            <Link to="/chat" className="text-gray-700 hover:text-purple-600 transition-colors font-medium">Community</Link>
+                            <Link to="/sessions" className="text-gray-700 hover:text-purple-600 transition-colors font-medium">Sessions</Link>
             </div>
 
-            <div className="hidden md:flex items-center space-x-4">
-              <Link to="/login">
+                <div className="hidden md:flex items-center space-x-4">
+        {user ? (
+          // Show when user is logged in
+          <>
+            <Link to="/profile">
+              <button className="text-gray-700 hover:text-purple-600 transition-colors font-medium">
+                My Profile
+              </button>
+            </Link>
+            <button 
+              onClick={handleLogout}
+              className="text-gray-700 hover:text-purple-600 transition-colors font-medium"
+            >
+              Logout
+            </button>
+          <span className="ml-3 inline-flex items-center space-x-2 px-3 py-1 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 font-semibold text-sm rounded-full shadow-sm border border-purple-300">
+  <span>👋 Welcome,</span>
+  <span className="font-bold">
+    {userProfile?.firstName ? `${userProfile.firstName}` : 'User'}
+  </span>
+</span>
+
+      
+          </>
+        ) : (
+          // Show when user is not logged in
+          <>
+            <Link to="/login">
               <button className="text-gray-700 hover:text-purple-600 transition-colors font-medium">
                 Login
               </button>
-              </Link>
-<Link to="/signup">
-  <button className="text-gray-700 hover:text-purple-600 transition-colors font-medium">
-    Sign Up
-  </button>
-</Link>
-              <button className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-full hover:from-purple-700 hover:to-blue-700 transition-all transform hover:scale-105 font-medium">
-                Start Learning
+            </Link>
+            <Link to="/signup">
+              <button className="text-gray-700 hover:text-purple-600 transition-colors font-medium">
+                Sign Up
               </button>
-            </div>
+            </Link>
+            <button className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-full hover:from-purple-700 hover:to-blue-700 transition-all transform hover:scale-105 font-medium">
+              Start Learning
+            </button>
+          </>
+        )}
+      </div>
 
             <button 
               className="md:hidden"
@@ -155,24 +215,8 @@ export default function TandemlyLanding() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-white border-t border-purple-100">
-            <div className="px-4 py-4 space-y-4">
-              <a href="#" className="block text-gray-700 hover:text-purple-600 font-medium">Discover</a>
-              <a href="#" className="block text-gray-700 hover:text-purple-600 font-medium">Community</a>
-              <a href="#" className="block text-gray-700 hover:text-purple-600 font-medium">Sessions</a>
-              <a href="#" className="block text-gray-700 hover:text-purple-600 font-medium">Resources</a>
-              <div className="border-t border-purple-100 pt-4 space-y-2">
-                <button className="block w-full text-left text-gray-700 font-medium py-2">Login</button>
-                <button className="block w-full text-left text-gray-700 font-medium py-2">Sign Up</button>
-                <button className="block w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-full text-center font-medium">
-                  Start Learning
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        
+        
       </nav>
 
       {/* Hero Section */}
